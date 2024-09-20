@@ -7,6 +7,21 @@
   type="text/css" 
   href="{% static 'css/dogs/dog-detail.css' %}"
 />
+<script defer src="{% static 'js/dog-detail.js' %}"></script>
+<link 
+  href="https://cdn.jsdelivr.net/npm/mc-datepicker/dist/mc-calendar.min.css" 
+  rel="stylesheet" 
+/>
+<link rel="stylesheet" href="{% static 'css/mcdp.css' %}">
+<script 
+  src="https://cdn.jsdelivr.net/npm/mc-datepicker/dist/mc-calendar.min.js"
+>
+</script>
+<link 
+  rel="stylesheet" 
+  type="text/css" 
+  href="{% static 'css/cats/cat-detail.css' %}"
+/>
 {% endblock %}
 
 {% block content %}
@@ -32,5 +47,62 @@
     </div>
   </div>
 </section>
+<div class="feedings-toy-container">
+  <section class="feedings">
+    <div class="subsection-title">
+      <h2>Feedings</h2>
+      <img 
+        src="{% static 'images/cat-cone.svg' %}" 
+        alt="An ice cream cone cat"
+      />
+      <img 
+        src="{% static 'images/cat-onigiri.svg' %}"
+        alt="A cat as onigiri"
+      />
+      <img 
+        src="{% static 'images/kitty-kabob.svg' %}" 
+        alt="A kabob of kittens"
+      />
+    </div>
+    <h3>Add a Feeding</h3>
+    <form
+      action="{% url 'add-feeding' dog.id %}" 
+      method="post" 
+      class="subsection-content"
+      autocomplete='off'
+    >
+			{% csrf_token %}
+      {% comment %} New markup below {% endcomment %}
+      {% if dog.fed_for_today %}
+        <p class="fed">{{dog.name}} has been fed all their meals for today!</p>
+      {% else %}
+        <p class="unfed">{{dog.name}} might be hungry!</p>
+      {% endif %}
+      {% comment %} New markup above {% endcomment %}
+      {{ feeding_form.as_p }}
+      <button type="submit" class="btn submit">Add Feeding</button>
+    </form>
+    <h3>Past Feedings</h3>
+    {% if dog.feeding_set.all.count %}
+    <table>
+      <thead>
+        <tr><th>Date</th><th>Meal</th></tr>
+      </thead>
+      <tbody>
+        {% for feeding in dog.feeding_set.all %}
+          <tr>
+            <td>{{feeding.date}}</td>
+            <td>{{feeding.get_meal_display}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="subsection-content">
+      <p>{{dog.name}} has never been fed 😔</p>
+    </div>
+  {% endif %}
+  </section>
+</div>
 
 {% endblock %}
